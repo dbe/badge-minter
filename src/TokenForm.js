@@ -10,26 +10,46 @@ class TokenForm extends Component {
 
     this.name = React.createRef();
     this.description = React.createRef();
-    this.externalUrl = React.createRef();
+    this.external = React.createRef();
     this.image = React.createRef();
+    this.form = React.createRef();
 
     this.state = {
       file: undefined,
-      imagePreviewUrl: undefined
+      imagePreviewUrl: undefined,
+      error: undefined,
+      submitting: false,
+      success: false,
     }
   }
 
   handleSubmit(event) {
-    event.preventDefault();
-    axios.post('https://kto3nk2oef.execute-api.us-east-1.amazonaws.com/default/mintToken', {
-      name: this.name.current.value,
-      description: this.description.current.value,
-      image: this.state.imagePreviewUrl
-    }).then(data => {
-      console.log('data: ', data);
-    }).catch(e => {
-      console.log('e: ', e);
-    });
+    if(this.form.current.checkValidity()) {
+      event.preventDefault();
+
+      this.setState({submitting: true});
+
+      axios.post('https://kto3nk2oef.execute-api.us-east-1.amazonaws.com/default/mintToken', {
+        name: this.name.current.value,
+        description: this.description.current.value,
+        image: this.state.imagePreviewUrl
+      }).then(data => {
+        this.setState({
+          submitting: false,
+          success: true,
+          error: undefined
+        })
+      }).catch(e => {
+        this.setState({
+          submitting: false,
+          success: false,
+          file: undefined,
+          imagePreviewUrl: undefined,
+          error: "Token name already exists"
+        })
+      });
+
+    }
   }
 
   handleFileChange(event) {
@@ -48,63 +68,79 @@ class TokenForm extends Component {
     reader.readAsDataURL(file)
   }
 
-
-  // <div class="card" style="width: 18rem;">
-  //   <img class="card-img-top" src="..." alt="Card image cap">
-  //   <div class="card-body">
-  //     <h5 class="card-title">Card title</h5>
-  //     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-  //     <a href="#" class="btn btn-primary">Go somewhere</a>
-  //   </div>
-  // </div>
-
-  render() {
+  pacman() {
     return (
-      <div className="card p-3">
-        <h1 className="card-title text-center">Mint new token</h1>
-
-        <form className="mt-5" onSubmit={this.handleSubmit}>
-          <div className="form-group row">
-            <label className="col-sm-3 col-form-label" htmlFor="name">Name</label>
-            <div className="col-sm-9">
-              <input className="form-control" type="text" name="name" id="name" placeholder="Secure Asset Fund for Users" ref={this.name}></input>
-            </div>
+      <div className="lds-css ng-scope">
+        <div className="lds-pacman">
+          <div>
+            <div></div>
+            <div></div>
+            <div></div>
           </div>
-
-          <div className="form-group row">
-            <label className="col-sm-3 col-form-label" htmlFor="description">Description</label>
-            <div className="col-sm-9">
-              <input className="form-control" type="text" name="description" id="description" placeholder="Funds are SAFU" ref={this.description}></input>
-            </div>
+          <div>
+            <div></div>
+            <div></div>
           </div>
-
-          <div className="form-group row">
-            <label className="col-sm-3 col-form-label" htmlFor="external-url">External link</label>
-            <div className="col-sm-9">
-              <input className="form-control" type="text" name="external-url" id="external-url" placeholder="http://mysite.com" ref={this.externalUrl}></input>
-            </div>
-          </div>
-
-          <div className="form-group row">
-            <label className="col-sm-3 col-form-label" htmlFor="image">Image</label>
-            <div className="col-sm-9">
-              <input className="form-control-file" type="file" name="image" id="image" onChange={this.handleFileChange}></input>
-            </div>
-          </div>
-
-          <div className="form-group row">
-            <div className="col-sm-10">
-              <img className="w-100" src={this.state.imagePreviewUrl} alt=""></img>
-            </div>
-          </div>
-
-          <div className="form-group text-center">
-            <input className="form-control btn auth-btn mb-2 w-50" type="submit" value="Submit" onClick={this.handleSubmit}/>
-          </div>
-
-        </form>
+        </div>
       </div>
     );
+  }
+
+  renderForm() {
+    return (
+      <form className="mt-5" onSubmit={this.handleSubmit} ref={this.form}>
+        <div className="form-group row">
+          <label className="col-sm-3 col-form-label" htmlFor="name">Name</label>
+          <div className="col-sm-9">
+            <input className="form-control" type="text" name="name" id="name" placeholder="Secure Asset Fund for Users" ref={this.name} required></input>
+          </div>
+        </div>
+
+        <div className="form-group row">
+          <label className="col-sm-3 col-form-label" htmlFor="description">Description</label>
+          <div className="col-sm-9">
+            <input className="form-control" type="text" name="description" id="description" placeholder="Funds are SAFU" ref={this.description} required></input>
+          </div>
+        </div>
+
+        <div className="form-group row">
+          <label className="col-sm-3 col-form-label" htmlFor="external">External link</label>
+          <div className="col-sm-9">
+            <input className="form-control" type="text" name="external" id="external" placeholder="http://mysite.com" ref={this.external} required></input>
+          </div>
+        </div>
+
+        <div className="form-group row">
+          <label className="col-sm-3 col-form-label" htmlFor="image">Image</label>
+          <div className="col-sm-9">
+            <input className="form-control-file" type="file" name="image" id="image" onChange={this.handleFileChange} required></input>
+          </div>
+        </div>
+
+        <div className="form-group row">
+          <div className="col-sm-10">
+            <img className="w-100" src={this.state.imagePreviewUrl} alt=""></img>
+          </div>
+        </div>
+
+        <div className="form-group text-center">
+          <input className="form-control btn auth-btn mb-2 w-50" type="submit" value="Submit" onClick={this.handleSubmit}/>
+        </div>
+
+      </form>
+    );
+  }
+
+  render() {
+    let content = this.state.submitting ? this.pacman() : this.renderForm();
+
+    return (
+      <div className="card p-3 mt-5">
+        <h1 className="card-title text-center">Mint new token</h1>
+        {this.state.error ? <div className="alert alert-danger">{this.state.error}</div> : ''}
+        {this.state.success ? <div className="alert alert-success">Success</div> : content}
+      </div>
+    )
   }
 }
 

@@ -79,19 +79,18 @@ class TokenForm extends Component {
           </div>
 
           <div className="form-group row">
-            <label className="col-sm-3 col-form-label" htmlFor="image">Image</label>
-            <div className="col-sm-9">
-              <input className="form-control-file" type="file" name="image" id="image" onChange={this.handleFileChange}></input>
-            </div>
-          </div>
-
-          <div className="form-group row">
             <label className="col-sm-3 col-form-label" htmlFor="external-url">External link</label>
             <div className="col-sm-9">
               <input className="form-control" type="text" name="external-url" id="external-url" placeholder="http://mysite.com" ref={this.externalUrl}></input>
             </div>
           </div>
 
+          <div className="form-group row">
+            <label className="col-sm-3 col-form-label" htmlFor="image">Image</label>
+            <div className="col-sm-9">
+              <input className="form-control-file" type="file" name="image" id="image" onChange={this.handleFileChange}></input>
+            </div>
+          </div>
 
           <div className="form-group row">
             <div className="col-sm-10">

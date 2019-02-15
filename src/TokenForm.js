@@ -32,7 +32,8 @@ class TokenForm extends Component {
       axios.post('https://kto3nk2oef.execute-api.us-east-1.amazonaws.com/default/mintToken', {
         name: this.name.current.value,
         description: this.description.current.value,
-        image: this.state.imagePreviewUrl
+        image: this.state.imagePreviewUrl,
+        external: this.external.current.value
       }).then(data => {
         this.setState({
           submitting: false,
